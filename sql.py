@@ -1,74 +1,48 @@
 import sqlite3 as sql
 import tkinter as tk
+import re
 
-con = sql.connect('example.db')
-cur = con.cursor()
-curr = con.cursor()
-window = tk.Tk()
-window.geometry("400x230")
-window.title("Přihlášení očkování")
+def reg_continue(text, text_tel):
 
-def register():
-    error = 0
-    text = rodnycislo.get()
-    rodnycislo.delete(0, tk.END)
-    text_tel = telefon.get()
-    telefon.delete(0, tk.END)
-    if len(text) == 0 or len(text_tel) == 0:
-        error += 1
-        label_err = tk.Label(
-            text='Některý z údajů je prázdný',
-            fg='red'
-        )
-        label_err.pack()
-    if len(text) != 10 and len(text) != 11:
-        error += 1
-        label_err = tk.Label(
-            text='Rodné číslo nemá správnou délku',
-            fg='red'
-        )
-        label_err.pack()
-    if len(text_tel) != 9:
-        error += 1
-        label_err = tk.Label(
-            text='Telefonní číslo nemá správnou délku',
-            fg='red'
-        )
-        label_err.pack()
-    if len(text) == 11:
-        cs = len(text)
-        print(cs)
-        text.replace("\n", "")
-        text2 = text.replace("/","")
-        pocet = len(text2)
-        print(text2)
-        vysledek = 0
-        for i in range(0, pocet, 2):
-            vysledek = vysledek + int(text2[i] + text2[i+1])
-        if vysledek % 11 == 0:
-            print("ok")
-        else:
-            error += 1
+    def reg_final():
+
+        rodnecislo = reg_rc_ent.get()
+        jmeno = reg_jmeno_ent.get()
+        prijmeni = reg_prijmeni_ent.get()
+        email = reg_email_ent.get()
+        telcislo = reg_telefon_ent.get()
+        regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
+        errors_reg = 0
+        tries = 0
+
+        if tries != 0:
+            label_err.remove()
+
+        if not jmeno.isalpha() or jmeno == ' ':
             label_err = tk.Label(
-                text='Toto není rodné číslo',
+                text='Jméno musí obsahovat pouze písmena',
                 fg='red'
             )
             label_err.pack()
-    if error == 0:
-        reg_continue(text, text_tel)
+            errors_reg += 1
+        if not prijmeni.isalpha() or prijmeni == ' ':
+            label_err = tk.Label(
+                text='Příjmení musí obsahovat pouze písmena',
+                fg='red'
+            )
+            label_err.pack()
+            errors_reg += 1
+        if not (re.search(regex, email)):
+            label_err = tk.Label(
+                text='Email není validní',
+                fg='red'
+            )
+            label_err.pack()
+            errors_reg += 1
 
-def reg_final():
-    '''
-    rodnecislo = reg_rc_ent.get()
-    jmeno = reg_jmeno_ent.get()
-    prijmeni = reg_prijmeni_ent.get()
-    email = reg_email_ent.get()
-    '''
-    telefon = reg_telefon_ent.get()
-    print(telefon)
+        if errors_reg != 0:
+            tries += 1
 
-
-def reg_continue(text, text_tel):
     insert_rodny = text
     insert_tel = text_tel
     checkos = curr.execute(
@@ -98,7 +72,7 @@ def reg_continue(text, text_tel):
         label.pack()
 
         reg_rc_ent = tk.Entry(
-            width=20,
+            width=30,
             relief="solid",
             justify="center"
         )
@@ -165,6 +139,59 @@ def reg_continue(text, text_tel):
         )
         odeslat.pack(pady=10)
 
+    else:
+        pass
+
+
+def register():
+    error = 0
+    text = rodnycislo.get()
+    rodnycislo.delete(0, tk.END)
+    text_tel = telefon.get()
+    telefon.delete(0, tk.END)
+    if len(text) == 0 or len(text_tel) == 0:
+        error += 1
+        label_err = tk.Label(
+            text='Některý z údajů je prázdný',
+            fg='red'
+        )
+        label_err.pack()
+    if len(text) != 10 and len(text) != 11:
+        error += 1
+        label_err = tk.Label(
+            text='Rodné číslo nemá správnou délku',
+            fg='red'
+        )
+        label_err.pack()
+    if len(text_tel) != 9:
+        error += 1
+        label_err = tk.Label(
+            text='Telefonní číslo nemá správnou délku',
+            fg='red'
+        )
+        label_err.pack()
+    if len(text) == 11:
+        cs = len(text)
+        print(cs)
+        text.replace("\n", "")
+        text2 = text.replace("/","")
+        pocet = len(text2)
+        print(text2)
+        vysledek = 0
+        for i in range(0, pocet, 2):
+            vysledek = vysledek + int(text2[i] + text2[i+1])
+        if vysledek % 11 == 0:
+            print("ok")
+        else:
+            error += 1
+            label_err = tk.Label(
+                text='Toto není rodné číslo',
+                fg='red'
+            )
+            label_err.pack()
+    if error == 0:
+        reg_continue(text, text_tel)
+
 def send():
     text = rodnycislo.get()
     rodnycislo.delete(0, tk.END)
@@ -212,7 +239,13 @@ def check(text, text_tel):
 
             textbox.pack()
 
-        window.mainloop()
+con = sql.connect('example.db')
+cur = con.cursor()
+curr = con.cursor()
+window = tk.Tk()
+window.geometry("400x230")
+window.title("Přihlášení očkování")
+
 
 main_label = tk.Label(
     text='Přihlašte se nebo začněte registraci',
