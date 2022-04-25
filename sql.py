@@ -5,9 +5,8 @@ con = sql.connect('example.db')
 cur = con.cursor()
 curr = con.cursor()
 window = tk.Tk()
-window.geometry("320x250")
+window.geometry("400x230")
 window.title("Přihlášení očkování")
-
 
 def register():
     error = 0
@@ -58,6 +57,16 @@ def register():
     if error == 0:
         reg_continue(text, text_tel)
 
+def reg_final():
+    '''
+    rodnecislo = reg_rc_ent.get()
+    jmeno = reg_jmeno_ent.get()
+    prijmeni = reg_prijmeni_ent.get()
+    email = reg_email_ent.get()
+    '''
+    telefon = reg_telefon_ent.get()
+    print(telefon)
+
 
 def reg_continue(text, text_tel):
     insert_rodny = text
@@ -88,74 +97,73 @@ def reg_continue(text, text_tel):
         )
         label.pack()
 
-        rodnycislo = tk.Entry(
+        reg_rc_ent = tk.Entry(
             width=20,
             relief="solid",
             justify="center"
         )
-        rodnycislo.pack()
-        rodnycislo.insert(0, insert_rodny)
-        rodnycislo.configure(state='disabled')
+        reg_rc_ent.pack()
+        reg_rc_ent.insert(0, insert_rodny)
+        #reg_rc_ent.configure(state='disabled')
 
         jmeno_lbl = tk.Label(
             text='Jméno'
         )
         jmeno_lbl.pack()
 
-        jmeno_ent = tk.Entry(
+        reg_jmeno_ent = tk.Entry(
             width=20,
             relief="solid",
             justify="center"
         )
-        jmeno_ent.pack()
+        reg_jmeno_ent.pack()
 
         prijmeni_lbl = tk.Label(
             text='Příjmení'
         )
         prijmeni_lbl.pack()
 
-        prijmeni_ent = tk.Entry(
+        reg_prijmeni_ent = tk.Entry(
             width=20,
             relief="solid",
             justify="center"
         )
-        prijmeni_ent.pack()
+        reg_prijmeni_ent.pack()
 
         email_lbl = tk.Label(
             text='Email'
         )
         email_lbl.pack()
 
-        email_ent = tk.Entry(
+        reg_email_ent = tk.Entry(
             width=20,
             relief="solid",
             justify="center"
         )
-        email_ent.pack()
+        reg_email_ent.pack()
 
         label_tel = tk.Label(
             text='Telefonní číslo',
         )
         label_tel.pack()
 
-        telefon = tk.Entry(
+        reg_telefon_ent = tk.Entry(
             width=20,
             relief="solid",
             justify="center"
         )
-        telefon.pack()
-        telefon.insert(0, insert_tel)
-        telefon.configure(state='disabled')
+        reg_telefon_ent.pack()
+        reg_telefon_ent.insert(0, insert_tel)
+        #reg_telefon_ent.configure(state='disabled')
 
         odeslat = tk.Button(
             width=15,
             height=2,
             text="REGISTROVAT",
             relief="solid",
-            command=send
+            command=reg_final
         )
         odeslat.pack(pady=10)
-
 
 def send():
     text = rodnycislo.get()
@@ -183,7 +191,7 @@ def check(text, text_tel):
         curr2 = con.cursor()
         window2 = tk.Tk()
         window2.geometry("600x600")
-        window2.title("Registrace očkování 1.1")
+        window2.title("Vaše údaje")
 
         listos = ('Rodné číslo:', 'Jméno:', 'Příjmení:', 'Email:', 'Telefon:')
 
@@ -217,7 +225,7 @@ label = tk.Label(
 label.pack()
 
 rodnycislo = tk.Entry(
-    width=20,
+    width=40,
     relief="solid",
     justify="center"
 )
@@ -229,7 +237,7 @@ label_tel = tk.Label(
 label_tel.pack()
 
 telefon = tk.Entry(
-    width=20,
+    width=40,
     relief="solid",
     justify="center"
 )
