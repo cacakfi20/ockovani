@@ -4,7 +4,11 @@ import re
 
 def reg_continue(text, text_tel):
 
-    def reg_final():
+    def reg_final(cabas):
+        label_err = tk.Label(
+        )
+        label_err.pack()
+        cabas.append(label_err)
 
         rodnecislo = reg_rc_ent.get()
         jmeno = reg_jmeno_ent.get()
@@ -13,10 +17,9 @@ def reg_continue(text, text_tel):
         telcislo = reg_telefon_ent.get()
         regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
         errors_reg = 0
-        tries = 0
-
-        if tries != 0:
-            label_err.remove()
+        if label_err.winfo_exists():
+            for label in cabas:
+                label_err.destroy()
 
         if not jmeno.isalpha() or jmeno == ' ':
             label_err = tk.Label(
@@ -24,6 +27,8 @@ def reg_continue(text, text_tel):
                 fg='red'
             )
             label_err.pack()
+            reg_jmeno_ent.delete(0, tk.END)
+            cabas.append(label_err)
             errors_reg += 1
         if not prijmeni.isalpha() or prijmeni == ' ':
             label_err = tk.Label(
@@ -31,6 +36,8 @@ def reg_continue(text, text_tel):
                 fg='red'
             )
             label_err.pack()
+            reg_prijmeni_ent.delete(0, tk.END)
+            cabas.append(label_err)
             errors_reg += 1
         if not (re.search(regex, email)):
             label_err = tk.Label(
@@ -38,10 +45,19 @@ def reg_continue(text, text_tel):
                 fg='red'
             )
             label_err.pack()
+            reg_email_ent.delete(0, tk.END)
+            cabas.append(label_err)
             errors_reg += 1
 
-        if errors_reg != 0:
-            tries += 1
+        if errors_reg == 0:
+            con = sql.connect('example.db')
+            c = con.cursor()
+
+            c.execute(""" INSERT INTO osoba(rodne_cislo, jmeno, prijmeni, email, telefon) VALUES(?,?,?,?,?) """, (rodnecislo, jmeno, prijmeni, email, telcislo, ))
+            con.commit()
+
+            send()
+
 
     insert_rodny = text
     insert_tel = text_tel
@@ -78,7 +94,7 @@ def reg_continue(text, text_tel):
         )
         reg_rc_ent.pack()
         reg_rc_ent.insert(0, insert_rodny)
-        #reg_rc_ent.configure(state='disabled')
+        reg_rc_ent.configure(state='disabled')
 
         jmeno_lbl = tk.Label(
             text='Jméno'
@@ -128,14 +144,14 @@ def reg_continue(text, text_tel):
         )
         reg_telefon_ent.pack()
         reg_telefon_ent.insert(0, insert_tel)
-        #reg_telefon_ent.configure(state='disabled')
+        reg_telefon_ent.configure(state='disabled')
 
         odeslat = tk.Button(
             width=15,
             height=2,
             text="REGISTROVAT",
             relief="solid",
-            command=reg_final
+            command=lambda:reg_final(cabas=[])
         )
         odeslat.pack(pady=10)
 
@@ -173,6 +189,13 @@ def register():
     if len(text) == 11:
         cs = len(text)
         print(cs)
+        if text.find("/") != 6:
+            error += 1
+            label_err = tk.Label(
+                text='Rodné číslo nemá správnou strukturu',
+                fg='red'
+            )
+            label_err.pack()
         text.replace("\n", "")
         text2 = text.replace("/","")
         pocet = len(text2)
