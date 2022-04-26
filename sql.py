@@ -4,11 +4,7 @@ import re
 
 def reg_continue(text, text_tel):
 
-    def reg_final(cabas):
-        label_err = tk.Label(
-        )
-        label_err.pack()
-        cabas.append(label_err)
+    def reg_final():
 
         rodnecislo = reg_rc_ent.get()
         jmeno = reg_jmeno_ent.get()
@@ -17,46 +13,21 @@ def reg_continue(text, text_tel):
         telcislo = reg_telefon_ent.get()
         regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
         errors_reg = 0
-        if label_err.winfo_exists():
-            for label in cabas:
-                label_err.destroy()
 
         if not jmeno.isalpha() or jmeno == ' ':
-            label_err = tk.Label(
-                text='Jméno musí obsahovat pouze písmena',
-                fg='red'
-            )
-            label_err.pack()
-            reg_jmeno_ent.delete(0, tk.END)
-            cabas.append(label_err)
+            reg_jmeno_ent.config(highlightbackground = "red", highlightcolor= "red")
             errors_reg += 1
         if not prijmeni.isalpha() or prijmeni == ' ':
-            label_err = tk.Label(
-                text='Příjmení musí obsahovat pouze písmena',
-                fg='red'
-            )
-            label_err.pack()
-            reg_prijmeni_ent.delete(0, tk.END)
-            cabas.append(label_err)
+            reg_prijmeni_ent.config(highlightbackground = "red", highlightcolor= "red")
             errors_reg += 1
         if not (re.search(regex, email)):
-            label_err = tk.Label(
-                text='Email není validní',
-                fg='red'
-            )
-            label_err.pack()
-            reg_email_ent.delete(0, tk.END)
-            cabas.append(label_err)
+            reg_email_ent.config(highlightbackground = "red", highlightcolor= "red")
             errors_reg += 1
-
         if errors_reg == 0:
             con = sql.connect('example.db')
             c = con.cursor()
-
             c.execute(""" INSERT INTO osoba(rodne_cislo, jmeno, prijmeni, email, telefon) VALUES(?,?,?,?,?) """, (rodnecislo, jmeno, prijmeni, email, telcislo, ))
             con.commit()
-
-            send()
 
 
     insert_rodny = text
@@ -90,7 +61,8 @@ def reg_continue(text, text_tel):
         reg_rc_ent = tk.Entry(
             width=30,
             relief="solid",
-            justify="center"
+            justify="center",
+            highlightthickness=2
         )
         reg_rc_ent.pack()
         reg_rc_ent.insert(0, insert_rodny)
@@ -104,7 +76,8 @@ def reg_continue(text, text_tel):
         reg_jmeno_ent = tk.Entry(
             width=20,
             relief="solid",
-            justify="center"
+            justify="center",
+            highlightthickness=2
         )
         reg_jmeno_ent.pack()
 
@@ -116,7 +89,8 @@ def reg_continue(text, text_tel):
         reg_prijmeni_ent = tk.Entry(
             width=20,
             relief="solid",
-            justify="center"
+            justify="center",
+            highlightthickness=2
         )
         reg_prijmeni_ent.pack()
 
@@ -128,7 +102,8 @@ def reg_continue(text, text_tel):
         reg_email_ent = tk.Entry(
             width=20,
             relief="solid",
-            justify="center"
+            justify="center",
+            highlightthickness=2
         )
         reg_email_ent.pack()
 
@@ -140,7 +115,8 @@ def reg_continue(text, text_tel):
         reg_telefon_ent = tk.Entry(
             width=20,
             relief="solid",
-            justify="center"
+            justify="center",
+            highlightthickness=2
         )
         reg_telefon_ent.pack()
         reg_telefon_ent.insert(0, insert_tel)
@@ -151,7 +127,7 @@ def reg_continue(text, text_tel):
             height=2,
             text="REGISTROVAT",
             relief="solid",
-            command=lambda:reg_final(cabas=[])
+            command=reg_final
         )
         odeslat.pack(pady=10)
 
@@ -167,35 +143,19 @@ def register():
     telefon.delete(0, tk.END)
     if len(text) == 0 or len(text_tel) == 0:
         error += 1
-        label_err = tk.Label(
-            text='Některý z údajů je prázdný',
-            fg='red'
-        )
-        label_err.pack()
+        rodnycislo.config(highlightbackground = "red", highlightcolor= "red")
     if len(text) != 10 and len(text) != 11:
         error += 1
-        label_err = tk.Label(
-            text='Rodné číslo nemá správnou délku',
-            fg='red'
-        )
-        label_err.pack()
+        rodnycislo.config(highlightbackground = "red", highlightcolor= "red")
     if len(text_tel) != 9:
         error += 1
-        label_err = tk.Label(
-            text='Telefonní číslo nemá správnou délku',
-            fg='red'
-        )
-        label_err.pack()
+        telefon.config(highlightbackground = "red", highlightcolor= "red")
     if len(text) == 11:
         cs = len(text)
         print(cs)
         if text.find("/") != 6:
             error += 1
-            label_err = tk.Label(
-                text='Rodné číslo nemá správnou strukturu',
-                fg='red'
-            )
-            label_err.pack()
+            rodnycislo.config(highlightbackground = "red", highlightcolor= "red")
         text.replace("\n", "")
         text2 = text.replace("/","")
         pocet = len(text2)
@@ -207,11 +167,7 @@ def register():
             print("ok")
         else:
             error += 1
-            label_err = tk.Label(
-                text='Toto není rodné číslo',
-                fg='red'
-            )
-            label_err.pack()
+            rodnycislo.config(highlightbackground = "red", highlightcolor= "red")
     if error == 0:
         reg_continue(text, text_tel)
 
@@ -254,13 +210,15 @@ def check(text, text_tel):
             i = 0
             textbox = tk.Listbox(
                 height=5,
+                width= 50,
             )
             for vec in row:
                 text = '{} {}'.format(listos[i], vec)
                 textbox.insert(tk.END, text)
                 i += 1
 
-            textbox.pack()
+            textbox.pack(pady=20)
+
 
 con = sql.connect('example.db')
 cur = con.cursor()
@@ -283,7 +241,8 @@ label.pack()
 rodnycislo = tk.Entry(
     width=40,
     relief="solid",
-    justify="center"
+    justify="center",
+    highlightthickness=2
 )
 rodnycislo.pack()
 
@@ -295,7 +254,8 @@ label_tel.pack()
 telefon = tk.Entry(
     width=40,
     relief="solid",
-    justify="center"
+    justify="center",
+    highlightthickness=2
 )
 telefon.pack()
 
