@@ -6,6 +6,54 @@ def reg_continue(text, text_tel):
 
     def reg_final():
 
+        def send_2():
+            text = rodnycislo.get()
+            rodnycislo.delete(0, tk.END)
+            text_tel = telefon.get()
+            telefon.delete(0, tk.END)
+            check_2(text, text_tel)
+
+        def check_2(text, text_tel):
+            check_text = text
+            check_tel = text_tel
+            checkos = curr.execute(
+                """
+                SELECT * FROM osoba WHERE rodne_cislo = ? AND telefon = ?
+                """, (check_text, check_tel,)
+            )
+            row = checkos.fetchone()
+            if row == None:
+                print("There are no results for this query")
+            else:
+                print("existuje")
+                window.destroy()
+                con2 = sql.connect('example.db')
+                cur2 = con.cursor()
+                curr2 = con.cursor()
+                window2 = tk.Tk()
+                window2.geometry("600x600")
+                window2.title("Vaše údaje")
+
+                listos = ('Rodné číslo:', 'Jméno:', 'Příjmení:', 'Email:', 'Telefon:')
+
+                curr2.execute(
+                    """
+                    SELECT * FROM osoba WHERE rodne_cislo = ?
+                    """, (check_text,)
+                )
+                for row in curr2.execute('SELECT * FROM osoba WHERE rodne_cislo = ?', (check_text,)):
+                    i = 0
+                    textbox = tk.Listbox(
+                        height=5,
+                        width=50,
+                    )
+                    for vec in row:
+                        text = '{} {}'.format(listos[i], vec)
+                        textbox.insert(tk.END, text)
+                        i += 1
+
+                    textbox.pack(pady=20)
+
         rodnecislo = reg_rc_ent.get()
         jmeno = reg_jmeno_ent.get()
         prijmeni = reg_prijmeni_ent.get()
@@ -29,6 +77,52 @@ def reg_continue(text, text_tel):
             c.execute(""" INSERT INTO osoba(rodne_cislo, jmeno, prijmeni, email, telefon) VALUES(?,?,?,?,?) """, (rodnecislo, jmeno, prijmeni, email, telcislo, ))
             con.commit()
 
+            window2.destroy()
+            cur = con.cursor()
+            curr = con.cursor()
+            window = tk.Tk()
+            window.geometry("400x230")
+            window.title("Přihlášení očkování")
+
+            main_label = tk.Label(
+                text='Přihlašte se nebo začněte registraci',
+                font=("Helvetica", 18),
+            )
+            main_label.pack()
+            label = tk.Label(
+                text='Rodné číslo'
+            )
+            label.pack()
+
+            rodnycislo = tk.Entry(
+                width=40,
+                relief="solid",
+                justify="center",
+                highlightthickness=2
+            )
+            rodnycislo.pack()
+
+            label_tel = tk.Label(
+                text='Telefonní číslo'
+            )
+            label_tel.pack()
+
+            telefon = tk.Entry(
+                width=40,
+                relief="solid",
+                justify="center",
+                highlightthickness=2
+            )
+            telefon.pack()
+
+            odeslat = tk.Button(
+                width=15,
+                height=1,
+                text="PŘIHLÁSIT",
+                relief="solid",
+                command=send_2
+            )
+            odeslat.pack(pady=10)
 
     insert_rodny = text
     insert_tel = text_tel
@@ -190,6 +284,32 @@ def check(text, text_tel):
     if row == None:
         print("There are no results for this query")
     else:
+        def update_jmeno():
+            jmeno_up = up_jmeno.get()
+            if not jmeno_up.isalpha() or jmeno_up == ' ':
+                up_jmeno.config(highlightbackground="red", highlightcolor="red")
+            else:
+                con = sql.connect('example.db')
+                c = con.cursor()
+                c.execute(""" UPDATE osoba SET jmeno = ? WHERE rodne_cislo = ?""",(jmeno_up, check_text))
+                con.commit()
+                c.execute(
+                    """
+                    SELECT * FROM osoba WHERE rodne_cislo = ?
+                    """,(check_text,)
+                )
+                for row in c.execute('SELECT * FROM osoba WHERE rodne_cislo = ?',(check_text,)):
+                    i = 0
+                    textbox = tk.Listbox(
+                        height=5,
+                        width= 50,
+                    )
+                    for vec in row:
+                        text = '{} {}'.format(listos[i], vec)
+                        textbox.insert(tk.END, text)
+                        i += 1
+
+                    textbox.pack(pady=20)
         print("existuje")
         window.destroy()
         con2 = sql.connect('example.db')
@@ -219,6 +339,80 @@ def check(text, text_tel):
 
             textbox.pack(pady=20)
 
+        zmena = tk.Label(
+            text='Můžete změnit své údaje',
+            font=("Helvetica", 18),
+        )
+        zmena.pack()
+
+        jmeno_lbl = tk.Label(
+            text='Jméno',
+            font=("Helvetica", 12),
+        )
+        jmeno_lbl.pack()
+        up_jmeno = tk.Entry(
+            width=30,
+            relief="solid",
+            justify="center",
+            highlightthickness=2
+        )
+        up_jmeno.pack()
+        jmeno_btn = tk.Button(
+            text='Změnit',
+            command=update_jmeno
+        )
+        jmeno_btn.pack(pady=10)
+
+        prijmeni_lbl = tk.Label(
+            text='Přijímení',
+            font=("Helvetica", 12),
+        )
+        prijmeni_lbl.pack()
+        up_prijmeni = tk.Entry(
+            width=30,
+            relief="solid",
+            justify="center",
+            highlightthickness=2
+        )
+        up_prijmeni.pack()
+        prijmeni_btn = tk.Button(
+            text='Změnit',
+        )
+        prijmeni_btn.pack(pady=10)
+
+        telefon_lbl = tk.Label(
+            text='Telefonní číslo',
+            font=("Helvetica", 12),
+        )
+        telefon_lbl.pack()
+        up_telefon = tk.Entry(
+            width=30,
+            relief="solid",
+            justify="center",
+            highlightthickness=2
+        )
+        up_telefon.pack()
+        telefon_btn = tk.Button(
+            text='Změnit',
+        )
+        telefon_btn.pack(pady=10)
+
+        mail_lbl = tk.Label(
+            text='Email',
+            font=("Helvetica", 12),
+        )
+        mail_lbl.pack()
+        up_mail = tk.Entry(
+            width=30,
+            relief="solid",
+            justify="center",
+            highlightthickness=2
+        )
+        up_mail.pack()
+        mail_btn = tk.Button(
+            text='Změnit',
+        )
+        mail_btn.pack(pady=10)
 
 con = sql.connect('example.db')
 cur = con.cursor()
