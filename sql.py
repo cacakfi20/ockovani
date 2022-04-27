@@ -8,7 +8,6 @@ def reg_continue(text, text_tel):
 
         def send_2():
             text = rodnycislo.get()
-            rodnycislo.delete(0, tk.END)
             text_tel = telefon.get()
             telefon.delete(0, tk.END)
             check_2(text, text_tel)
@@ -476,7 +475,7 @@ def reg_continue(text, text_tel):
         odeslat.pack(pady=10)
 
     else:
-        pass
+        rodnycislo.config(highlightbackground = "red", highlightcolor= "red")
 
 
 def register():
