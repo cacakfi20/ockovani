@@ -24,7 +24,173 @@ def reg_continue(text, text_tel):
             row = checkos.fetchone()
             if row == None:
                 print("There are no results for this query")
+                rodnycislo.config(highlightbackground = "red", highlightcolor= "red")
+                telefon.config(highlightbackground = "red", highlightcolor= "red")
             else:
+                def update_jmeno2():
+                    jmeno_up = up_jmeno.get()
+                    if not jmeno_up.isalpha() or jmeno_up == ' ':
+                        up_jmeno.delete(0, tk.END)
+                        up_jmeno.config(highlightbackground="red", highlightcolor="red")
+                    else:
+                        up_jmeno.config(highlightbackground="black", highlightcolor="black")
+                        up_jmeno.delete(0, tk.END)
+                        con = sql.connect('example.db')
+                        c = con.cursor()
+                        c.execute(""" UPDATE osoba SET jmeno = ? WHERE rodne_cislo = ?""", (jmeno_up, check_text))
+                        con.commit()
+
+                        c.execute(
+                            """
+                            SELECT * FROM osoba WHERE rodne_cislo = ?
+                            """, (check_text,)
+                        )
+                        updated_window = tk.Toplevel(window2)
+                        updated_window.geometry("600x300")
+                        updated_window.title("Upravené údaje")
+                        for row in c.execute('SELECT * FROM osoba WHERE rodne_cislo = ?', (check_text,)):
+                            i = 0
+                            textbox = tk.Listbox(
+                                updated_window,
+                                height=5,
+                                width=50,
+                            )
+                            for vec in row:
+                                text = '{} {}'.format(listos[i], vec)
+                                textbox.insert(tk.END, text)
+                                i += 1
+
+                            textbox.pack(pady=20)
+
+                def update_prijmeni2():
+                    prijmeni_up = up_prijmeni.get()
+                    if not prijmeni_up.isalpha() or prijmeni_up == ' ':
+                        up_prijmeni.config(highlightbackground="red", highlightcolor="red")
+                        up_prijmeni.delete(0, tk.END)
+                    else:
+                        up_prijmeni.delete(0, tk.END)
+                        up_prijmeni.config(highlightbackground="black", highlightcolor="black")
+                        con = sql.connect('example.db')
+                        c = con.cursor()
+                        c.execute(""" UPDATE osoba SET prijmeni = ? WHERE rodne_cislo = ?""", (prijmeni_up, check_text))
+                        con.commit()
+
+                        c.execute(
+                            """osoba
+                            SELECT * FROM osoba WHERE rodne_cislo = ?
+                            """, (check_text,)
+                        )
+                        updated_window = tk.Toplevel(window2)
+                        updated_window.geometry("600x300")
+                        updated_window.title("Upravené údaje")
+                        for row in c.execute('SELECT * FROM osoba WHERE rodne_cislo = ?', (check_text,)):
+                            i = 0
+                            textbox = tk.Listbox(
+                                updated_window,
+                                height=5,
+                                width=50,
+                            )
+                            for vec in row:
+                                text = '{} {}'.format(listos[i], vec)
+                                textbox.insert(tk.END, text)
+                                i += 1
+
+                            textbox.pack(pady=20)
+
+                def update_telefon2():
+                    telefon_up = up_telefon.get()
+                    num_error = 0
+                    if not telefon_up.isdigit():
+                        up_telefon.config(highlightbackground="red", highlightcolor="red")
+                        num_error += 1
+                    if len(telefon_up) != 9:
+                        up_telefon.config(highlightbackground="red", highlightcolor="red")
+                        num_error += 1
+                    if num_error == 0:
+                        up_telefon.config(highlightbackground="black", highlightcolor="black")
+                        up_telefon.delete(0, tk.END)
+                        con = sql.connect('example.db')
+                        c = con.cursor()
+                        c.execute(""" UPDATE osoba SET telefon = ? WHERE rodne_cislo = ?""", (telefon_up, check_text))
+                        con.commit()
+
+                        c.execute(
+                            """
+                            SELECT * FROM osoba WHERE rodne_cislo = ?
+                            """, (check_text,)
+                        )
+                        updated_window = tk.Toplevel(window2)
+                        updated_window.geometry("600x300")
+                        updated_window.title("Upravené údaje")
+                        for row in c.execute('SELECT * FROM osoba WHERE rodne_cislo = ?', (check_text,)):
+                            i = 0
+                            textbox = tk.Listbox(
+                                updated_window,
+                                height=5,
+                                width=50,
+                            )
+                            for vec in row:
+                                text = '{} {}'.format(listos[i], vec)
+                                textbox.insert(tk.END, text)
+                                i += 1
+
+                            textbox.pack(pady=20)
+
+                def update_mail2():
+                    mail_up = up_mail.get()
+                    regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+                    if not (re.search(regex, mail_up)):
+                        up_mail.config(highlightbackground="red", highlightcolor="red")
+                    else:
+                        up_mail.config(highlightbackground="black", highlightcolor="black")
+                        up_mail.delete(0, tk.END)
+                        con = sql.connect('example.db')
+                        c = con.cursor()
+                        c.execute(""" UPDATE osoba SET email = ? WHERE rodne_cislo = ?""", (mail_up, check_text))
+                        con.commit()
+
+                        c.execute(
+                            """
+                            SELECT * FROM osoba WHERE rodne_cislo = ?
+                            """, (check_text,)
+                        )
+                        updated_window = tk.Toplevel(window2)
+                        updated_window.geometry("600x300")
+                        updated_window.title("Upravené údaje")
+                        for row in c.execute('SELECT * FROM osoba WHERE rodne_cislo = ?', (check_text,)):
+                            i = 0
+                            textbox = tk.Listbox(
+                                updated_window,
+                                height=5,
+                                width=50,
+                            )
+                            for vec in row:
+                                text = '{} {}'.format(listos[i], vec)
+                                textbox.insert(tk.END, text)
+                                i += 1
+
+                            textbox.pack(pady=20)
+
+                def delete_all2():
+                    con = sql.connect('example.db')
+                    c = con.cursor()
+                    c.execute(""" DELETE FROM osoba WHERE rodne_cislo = ?""", (check_text,))
+                    con.commit()
+
+                    updated_window = tk.Tk()
+                    updated_window.geometry("400x100")
+                    updated_window.title("Upravené údaje")
+
+                    exit_message = tk.Label(
+                        updated_window,
+                        text='Vaše data byla úspěšně smazána',
+                        font=("Helvetica", 18),
+                    )
+
+                    exit_message.pack(pady=20)
+
+                    window2.destroy()
+
                 print("existuje")
                 window.destroy()
                 con2 = sql.connect('example.db')
@@ -53,6 +219,90 @@ def reg_continue(text, text_tel):
                         i += 1
 
                     textbox.pack(pady=20)
+                zmena = tk.Label(
+                    text='Můžete změnit své údaje',
+                    font=("Helvetica", 18),
+                )
+                zmena.pack()
+
+                jmeno_lbl = tk.Label(
+                    text='Jméno',
+                    font=("Helvetica", 12),
+                )
+                jmeno_lbl.pack()
+                up_jmeno = tk.Entry(
+                    width=30,
+                    relief="solid",
+                    justify="center",
+                    highlightthickness=2
+                )
+                up_jmeno.pack()
+                jmeno_btn = tk.Button(
+                    text='Změnit',
+                    command=update_jmeno2
+                )
+                jmeno_btn.pack(pady=10)
+
+                prijmeni_lbl = tk.Label(
+                    text='Přijímení',
+                    font=("Helvetica", 12),
+                )
+                prijmeni_lbl.pack()
+                up_prijmeni = tk.Entry(
+                    width=30,
+                    relief="solid",
+                    justify="center",
+                    highlightthickness=2
+                )
+                up_prijmeni.pack()
+                prijmeni_btn = tk.Button(
+                    text='Změnit',
+                    command=update_prijmeni2
+                )
+                prijmeni_btn.pack(pady=10)
+
+                telefon_lbl = tk.Label(
+                    text='Telefonní číslo',
+                    font=("Helvetica", 12),
+                )
+                telefon_lbl.pack()
+                up_telefon = tk.Entry(
+                    width=30,
+                    relief="solid",
+                    justify="center",
+                    highlightthickness=2
+                )
+                up_telefon.pack()
+                telefon_btn = tk.Button(
+                    text='Změnit',
+                    command=update_telefon2
+                )
+                telefon_btn.pack(pady=10)
+
+                mail_lbl = tk.Label(
+                    text='Email',
+                    font=("Helvetica", 12),
+                )
+                mail_lbl.pack()
+                up_mail = tk.Entry(
+                    width=30,
+                    relief="solid",
+                    justify="center",
+                    highlightthickness=2
+                )
+                up_mail.pack()
+                mail_btn = tk.Button(
+                    text='Změnit',
+                    command=update_mail2
+                )
+                mail_btn.pack(pady=10)
+
+                delete = tk.Button(
+                    text='Smazat vše',
+                    width=20,
+                    command = delete_all2
+                )
+                delete.pack(pady=10)
 
         rodnecislo = reg_rc_ent.get()
         jmeno = reg_jmeno_ent.get()
@@ -283,24 +533,34 @@ def check(text, text_tel):
     row = checkos.fetchone()
     if row == None:
         print("There are no results for this query")
+        rodnycislo.config(highlightbackground="red", highlightcolor="red")
+        telefon.config(highlightbackground="red", highlightcolor="red")
     else:
         def update_jmeno():
             jmeno_up = up_jmeno.get()
             if not jmeno_up.isalpha() or jmeno_up == ' ':
+                up_jmeno.delete(0, tk.END)
                 up_jmeno.config(highlightbackground="red", highlightcolor="red")
             else:
+                up_jmeno.config(highlightbackground="black", highlightcolor="black")
+                up_jmeno.delete(0, tk.END)
                 con = sql.connect('example.db')
                 c = con.cursor()
                 c.execute(""" UPDATE osoba SET jmeno = ? WHERE rodne_cislo = ?""",(jmeno_up, check_text))
                 con.commit()
+
                 c.execute(
                     """
                     SELECT * FROM osoba WHERE rodne_cislo = ?
                     """,(check_text,)
                 )
+                updated_window = tk.Toplevel(window2)
+                updated_window.geometry("600x300")
+                updated_window.title("Upravené údaje")
                 for row in c.execute('SELECT * FROM osoba WHERE rodne_cislo = ?',(check_text,)):
                     i = 0
                     textbox = tk.Listbox(
+                        updated_window,
                         height=5,
                         width= 50,
                     )
@@ -310,6 +570,136 @@ def check(text, text_tel):
                         i += 1
 
                     textbox.pack(pady=20)
+
+        def update_prijmeni():
+            prijmeni_up = up_prijmeni.get()
+            if not prijmeni_up.isalpha() or prijmeni_up == ' ':
+                up_prijmeni.config(highlightbackground="red", highlightcolor="red")
+                up_prijmeni.delete(0, tk.END)
+            else:
+                up_prijmeni.delete(0, tk.END)
+                up_prijmeni.config(highlightbackground="black", highlightcolor="black")
+                con = sql.connect('example.db')
+                c = con.cursor()
+                c.execute(""" UPDATE osoba SET prijmeni = ? WHERE rodne_cislo = ?""", (prijmeni_up, check_text))
+                con.commit()
+
+                c.execute(
+                    """
+                    SELECT * FROM osoba WHERE rodne_cislo = ?
+                    """, (check_text,)
+                )
+                updated_window = tk.Toplevel(window2)
+                updated_window.geometry("600x300")
+                updated_window.title("Upravené údaje")
+                for row in c.execute('SELECT * FROM osoba WHERE rodne_cislo = ?', (check_text,)):
+                    i = 0
+                    textbox = tk.Listbox(
+                        updated_window,
+                        height=5,
+                        width=50,
+                    )
+                    for vec in row:
+                        text = '{} {}'.format(listos[i], vec)
+                        textbox.insert(tk.END, text)
+                        i += 1
+
+                    textbox.pack(pady=20)
+        def update_telefon():
+            telefon_up = up_telefon.get()
+            num_error = 0
+            if not telefon_up.isdigit():
+                up_telefon.config(highlightbackground="red", highlightcolor="red")
+                num_error += 1
+            if len(telefon_up) != 9:
+                up_telefon.config(highlightbackground="red", highlightcolor="red")
+                num_error += 1
+            if num_error == 0:
+                up_telefon.config(highlightbackground="black", highlightcolor="black")
+                up_telefon.delete(0, tk.END)
+                con = sql.connect('example.db')
+                c = con.cursor()
+                c.execute(""" UPDATE osoba SET telefon = ? WHERE rodne_cislo = ?""", (telefon_up, check_text))
+                con.commit()
+
+                c.execute(
+                    """
+                    SELECT * FROM osoba WHERE rodne_cislo = ?
+                    """, (check_text,)
+                )
+                updated_window = tk.Toplevel(window2)
+                updated_window.geometry("600x300")
+                updated_window.title("Upravené údaje")
+                for row in c.execute('SELECT * FROM osoba WHERE rodne_cislo = ?', (check_text,)):
+                    i = 0
+                    textbox = tk.Listbox(
+                        updated_window,
+                        height=5,
+                        width=50,
+                    )
+                    for vec in row:
+                        text = '{} {}'.format(listos[i], vec)
+                        textbox.insert(tk.END, text)
+                        i += 1
+
+                    textbox.pack(pady=20)
+
+        def update_mail():
+            mail_up = up_mail.get()
+            regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+            if not (re.search(regex, mail_up)):
+                up_mail.config(highlightbackground="red", highlightcolor="red")
+            else:
+                up_mail.config(highlightbackground="black", highlightcolor="black")
+                up_mail.delete(0, tk.END)
+                con = sql.connect('example.db')
+                c = con.cursor()
+                c.execute(""" UPDATE osoba SET email = ? WHERE rodne_cislo = ?""", (mail_up, check_text))
+                con.commit()
+
+                c.execute(
+                    """
+                    SELECT * FROM osoba WHERE rodne_cislo = ?
+                    """, (check_text,)
+                )
+                updated_window = tk.Toplevel(window2)
+                updated_window.geometry("600x300")
+                updated_window.title("Upravené údaje")
+                for row in c.execute('SELECT * FROM osoba WHERE rodne_cislo = ?', (check_text,)):
+                    i = 0
+                    textbox = tk.Listbox(
+                        updated_window,
+                        height=5,
+                        width=50,
+                    )
+                    for vec in row:
+                        text = '{} {}'.format(listos[i], vec)
+                        textbox.insert(tk.END, text)
+                        i += 1
+
+                    textbox.pack(pady=20)
+
+        def delete_all():
+            con = sql.connect('example.db')
+            c = con.cursor()
+            c.execute(""" DELETE FROM osoba WHERE rodne_cislo = ?""", (check_text,))
+            con.commit()
+
+            updated_window = tk.Tk()
+            updated_window.geometry("400x100")
+            updated_window.title("Upravené údaje")
+
+            exit_message = tk.Label(
+                updated_window,
+                text='Vaše data byla úspěšně smazána',
+                font = ("Helvetica", 18),
+            )
+
+            exit_message.pack(pady=20)
+
+            window2.destroy()
+
+
         print("existuje")
         window.destroy()
         con2 = sql.connect('example.db')
@@ -377,6 +767,7 @@ def check(text, text_tel):
         up_prijmeni.pack()
         prijmeni_btn = tk.Button(
             text='Změnit',
+            command=update_prijmeni
         )
         prijmeni_btn.pack(pady=10)
 
@@ -394,6 +785,7 @@ def check(text, text_tel):
         up_telefon.pack()
         telefon_btn = tk.Button(
             text='Změnit',
+            command=update_telefon
         )
         telefon_btn.pack(pady=10)
 
@@ -411,8 +803,17 @@ def check(text, text_tel):
         up_mail.pack()
         mail_btn = tk.Button(
             text='Změnit',
+            command=update_mail
         )
         mail_btn.pack(pady=10)
+
+        delete = tk.Button(
+            text='Smazat vše',
+            width=20,
+            command=delete_all
+        )
+        delete.pack(pady=10)
+
 
 con = sql.connect('example.db')
 cur = con.cursor()
