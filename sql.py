@@ -2,16 +2,19 @@ import sqlite3 as sql
 import tkinter as tk
 import re
 
+# funkce na vytvoření formuláře pro registraci
 def reg_continue(text, text_tel):
 
+    # funkce na kontrolu dat při registraci
     def reg_final():
 
+        # funkce na přeposlání dat ke kontrole
         def send_2():
             text = rodnycislo.get()
             text_tel = telefon.get()
-            telefon.delete(0, tk.END)
             check_2(text, text_tel)
 
+        # funkce na kontrolu dat při registraci a následném přihlášení
         def check_2(text, text_tel):
             check_text = text
             check_tel = text_tel
@@ -61,6 +64,7 @@ def reg_continue(text, text_tel):
 
                             textbox.pack(pady=20)
 
+                # funkce na update prijmeni
                 def update_prijmeni2():
                     prijmeni_up = up_prijmeni.get()
                     if not prijmeni_up.isalpha() or prijmeni_up == ' ':
@@ -75,7 +79,7 @@ def reg_continue(text, text_tel):
                         con.commit()
 
                         c.execute(
-                            """osoba
+                            """
                             SELECT * FROM osoba WHERE rodne_cislo = ?
                             """, (check_text,)
                         )
@@ -96,6 +100,7 @@ def reg_continue(text, text_tel):
 
                             textbox.pack(pady=20)
 
+                # funkce na update telefonu
                 def update_telefon2():
                     telefon_up = up_telefon.get()
                     num_error = 0
@@ -135,6 +140,7 @@ def reg_continue(text, text_tel):
 
                             textbox.pack(pady=20)
 
+                #funkce na update emailu
                 def update_mail2():
                     mail_up = up_mail.get()
                     regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
@@ -313,13 +319,16 @@ def reg_continue(text, text_tel):
 
         if not jmeno.isalpha() or jmeno == ' ':
             reg_jmeno_ent.config(highlightbackground = "red", highlightcolor= "red")
+            reg_jmeno_ent.delete(0, tk.END)
             errors_reg += 1
         if not prijmeni.isalpha() or prijmeni == ' ':
-            reg_prijmeni_ent.config(highlightbackground = "red", highlightcolor= "red")
+            reg_prijmeni_ent.config(highlightbackground = "red", highlightcolor="red")
             errors_reg += 1
+            reg_prijmeni_ent.delete(0, tk.END)
         if not (re.search(regex, email)):
             reg_email_ent.config(highlightbackground = "red", highlightcolor= "red")
             errors_reg += 1
+            reg_email_ent.delete(0, tk.END)
         if errors_reg == 0:
             con = sql.connect('example.db')
             c = con.cursor()
@@ -477,28 +486,32 @@ def reg_continue(text, text_tel):
     else:
         rodnycislo.config(highlightbackground = "red", highlightcolor= "red")
 
-
+# funkce na kontrolu dat při registraci
 def register():
     error = 0
     text = rodnycislo.get()
-    rodnycislo.delete(0, tk.END)
+    #rodnycislo.delete(0, tk.END)
     text_tel = telefon.get()
-    telefon.delete(0, tk.END)
+    #telefon.delete(0, tk.END)
     if len(text) == 0 or len(text_tel) == 0:
         error += 1
         rodnycislo.config(highlightbackground = "red", highlightcolor= "red")
+        telefon.delete(0, tk.END)
     if len(text) != 10 and len(text) != 11:
         error += 1
         rodnycislo.config(highlightbackground = "red", highlightcolor= "red")
+        telefon.delete(0, tk.END)
     if len(text_tel) != 9:
         error += 1
         telefon.config(highlightbackground = "red", highlightcolor= "red")
+        telefon.delete(0, tk.END)
     if len(text) == 11:
         cs = len(text)
         print(cs)
         if text.find("/") != 6:
             error += 1
             rodnycislo.config(highlightbackground = "red", highlightcolor= "red")
+            rodnycislo.delete(0, tk.END)
         text.replace("\n", "")
         text2 = text.replace("/","")
         pocet = len(text2)
@@ -511,16 +524,37 @@ def register():
         else:
             error += 1
             rodnycislo.config(highlightbackground = "red", highlightcolor= "red")
+            rodnycislo.delete(0, tk.END)
+    if len(text) == 10:
+        cs = len(text)
+        print(cs)
+        if text.find("/") != 6:
+            error += 1
+            rodnycislo.config(highlightbackground="red", highlightcolor="red")
+            rodnycislo.delete(0, tk.END)
+        else:
+            text.replace("\n", "")
+            text2 = text.replace("/", "")
+            pocet = len(text2)
+            print(text2)
+            strtext = str(text2)
+            rok = strtext[0] + strtext[1]
+            if 46 <= int(rok) <= 54:
+                print('ok')
+            else:
+                error += 1
+                rodnycislo.config(highlightbackground="red", highlightcolor="red")
+                rodnycislo.delete(0, tk.END)
     if error == 0:
         reg_continue(text, text_tel)
 
+#funkce na odesílání dat při přihlášení
 def send():
     text = rodnycislo.get()
-    rodnycislo.delete(0, tk.END)
     text_tel = telefon.get()
-    telefon.delete(0, tk.END)
     check(text, text_tel)
 
+#funkce na výpis dat při správném zapsání údajů
 def check(text, text_tel):
     check_text = text
     check_tel = text_tel
@@ -535,6 +569,8 @@ def check(text, text_tel):
         rodnycislo.config(highlightbackground="red", highlightcolor="red")
         telefon.config(highlightbackground="red", highlightcolor="red")
     else:
+
+        # funkce pro update jména
         def update_jmeno():
             jmeno_up = up_jmeno.get()
             if not jmeno_up.isalpha() or jmeno_up == ' ':
@@ -548,6 +584,7 @@ def check(text, text_tel):
                 c.execute(""" UPDATE osoba SET jmeno = ? WHERE rodne_cislo = ?""",(jmeno_up, check_text))
                 con.commit()
 
+                # výpis po updatu jména
                 c.execute(
                     """
                     SELECT * FROM osoba WHERE rodne_cislo = ?
@@ -570,6 +607,7 @@ def check(text, text_tel):
 
                     textbox.pack(pady=20)
 
+        # funkce na update prijmeni
         def update_prijmeni():
             prijmeni_up = up_prijmeni.get()
             if not prijmeni_up.isalpha() or prijmeni_up == ' ':
@@ -583,6 +621,7 @@ def check(text, text_tel):
                 c.execute(""" UPDATE osoba SET prijmeni = ? WHERE rodne_cislo = ?""", (prijmeni_up, check_text))
                 con.commit()
 
+                # výpis po updatu prijmeni
                 c.execute(
                     """
                     SELECT * FROM osoba WHERE rodne_cislo = ?
@@ -604,6 +643,7 @@ def check(text, text_tel):
                         i += 1
 
                     textbox.pack(pady=20)
+        # funkce na update telefonního čísla
         def update_telefon():
             telefon_up = up_telefon.get()
             num_error = 0
@@ -621,6 +661,7 @@ def check(text, text_tel):
                 c.execute(""" UPDATE osoba SET telefon = ? WHERE rodne_cislo = ?""", (telefon_up, check_text))
                 con.commit()
 
+                # výpis po updatu telefonu
                 c.execute(
                     """
                     SELECT * FROM osoba WHERE rodne_cislo = ?
@@ -656,6 +697,7 @@ def check(text, text_tel):
                 c.execute(""" UPDATE osoba SET email = ? WHERE rodne_cislo = ?""", (mail_up, check_text))
                 con.commit()
 
+                #výpis po updatu emailu
                 c.execute(
                     """
                     SELECT * FROM osoba WHERE rodne_cislo = ?
@@ -678,6 +720,7 @@ def check(text, text_tel):
 
                     textbox.pack(pady=20)
 
+        #funkce na vymazání dat
         def delete_all():
             con = sql.connect('example.db')
             c = con.cursor()
@@ -709,6 +752,8 @@ def check(text, text_tel):
         window2.title("Vaše údaje")
 
         listos = ('Rodné číslo:', 'Jméno:', 'Příjmení:', 'Email:', 'Telefon:')
+
+        # výpis uživatelových dat a možností úprav dat
 
         curr2.execute(
             """
@@ -814,6 +859,7 @@ def check(text, text_tel):
         delete.pack(pady=10)
 
 
+# tkinter pro registraci a prihlaseni (základní okno)
 con = sql.connect('example.db')
 cur = con.cursor()
 curr = con.cursor()
